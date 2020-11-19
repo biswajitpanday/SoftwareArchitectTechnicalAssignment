@@ -8,6 +8,6 @@ namespace ApplicationCore.Models
         public decimal Amount { get; set; }
         public string CurrencyCode { get; set; }
         public DateTime TransactionDate { get; set; }
-        public Enum Status { get; set; }
+        public string Status { get; set; }
     }
 }
