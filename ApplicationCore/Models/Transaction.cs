@@ -10,5 +10,6 @@ namespace ApplicationCore.Models
         public string CurrencyCode { get; set; }
         public DateTime TransactionDate { get; set; }
         public string Status { get; set; }
+        public string OutputStatus { get; set; }
     }
 }

@@ -31,6 +31,7 @@ namespace WebMVC
             services.AddTransient<ITransactionFileReader, CsvTransactionReader>();
             services.AddTransient<ITransactionFileReader, XmlTransactionReader>();
             services.AddTransient<ITransactionImportService, TransactionImportService>();
+            services.AddTransient<ITransactionService, TransactionService>();
 
             // Repositories
             services.AddTransient<ITransactionRepository, TransactionRepository>();
