@@ -1,5 +1,8 @@
 # Software Architect Technical Assignment
 
+## Project Diagram
+![Project Diagram](https://github.com/biswajitpanday/SoftwareArchitectTechnicalAssignment/blob/main/ProjectDiagram.PNG?raw=true)
+
 ## Technologies Are Used
 * Asp.net Core 2.2
 * Entity Framework Core
