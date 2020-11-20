@@ -39,6 +39,8 @@ namespace WebMVC
             // DbContext
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("ApplicationDatabase")));
+
+            services.AddSwaggerGen();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -59,7 +61,11 @@ namespace WebMVC
             app.UseStaticFiles();
             app.UseCors();
             app.UseRouting();
-
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Transaction API");
+            });
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
