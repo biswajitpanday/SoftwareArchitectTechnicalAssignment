@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using ApplicationCore.Interfaces.Services;
 using ApplicationCore.Models;
 using CsvHelper;
 using CsvHelper.Configuration;
@@ -12,11 +10,16 @@ using CsvHelper.TypeConversion;
 
 namespace ApplicationService.TransactionReaders
 {
-    public class CsvTransactionReader : ITransactionFileReader
+    public class CsvTransactionReader : TransactionBaseReader
     {
-        public string FileType => "csv";
+        internal override string DateFormat => "dd/MM/yyyy hh:mm:ss";
 
-        public Task<List<Transaction>> Read(string path)
+        internal override Dictionary<string, string> StatusMap => new Dictionary<string, string>
+            {{"Approved", "A"}, {"Failed", "R"}, {"Finished", "D"}};
+
+        public override string FileType => "csv";
+
+        public override Task<List<TransactionRawData>> ReadTransactions(string path)
         {
             return Task.Run(() =>
             {
@@ -25,22 +28,22 @@ namespace ApplicationService.TransactionReaders
                 csv.Configuration.RegisterClassMap<TransactionCsvMap>();
                 csv.Configuration.BadDataFound = null;
                 csv.Configuration.HasHeaderRecord = false;
-                var records = csv.GetRecords<Transaction>().ToList();
+                var records = csv.GetRecords<TransactionRawData>().ToList();
                 return records;
             });
         }
 
         #region Supported Class
 
-        private class TransactionCsvMap : ClassMap<Transaction>
+        private class TransactionCsvMap : ClassMap<TransactionRawData>
         {
             public TransactionCsvMap()
             {
                 Map(m => m.TransactionId).Index(0);
-                Map(m => m.Amount).Index(1).TypeConverter<DecimalConverter>();
                 Map(m => m.CurrencyCode).Index(2);
-                Map(m => m.TransactionDate).Index(3).TypeConverterOption.Format("dd/MM/yyyy hh:mm:ss");
                 Map(m => m.Status).Index(4);
+                Map(m => m.OriginalDateTime).Index(3);
+                Map(m => m.OriginalAmount).Index(1);
             }
         }
 

@@ -27,11 +27,6 @@ namespace ApplicationService.Services
             if (transactionFileReader == null)
                 throw new Exception("Unknown format");
             var transactions = await transactionFileReader.Read(filePath);
-            transactions = transactions.Select(x =>
-            {
-                x.OutputStatus = MapStatus(x.Status);
-                return x;
-            }).ToList();
             await _transactionRepository.ImportTransaction(transactions);
         }
 
@@ -47,14 +42,6 @@ namespace ApplicationService.Services
         {
             var extension = Path.GetExtension(filePath);
             return extension.Replace(".", "");
-        }
-
-        private string MapStatus(string status)
-        {
-            var statusMaps = new Dictionary<string, string> { { "Approved", "A" }, { "Failed", "R" }, { "Finished", "D" }, { "Rejected", "R" }, { "Done", "D" } };
-            if (statusMaps.TryGetValue(status, out var outputStatus))
-                return outputStatus;
-            return string.Empty;
         }
 
         #endregion

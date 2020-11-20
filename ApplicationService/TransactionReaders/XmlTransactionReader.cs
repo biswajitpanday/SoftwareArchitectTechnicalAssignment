@@ -4,16 +4,19 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
-using ApplicationCore.Interfaces.Services;
-using ApplicationCore.Models;
 
 namespace ApplicationService.TransactionReaders
 {
-    public class XmlTransactionReader : ITransactionFileReader
+    public class XmlTransactionReader : TransactionBaseReader
     {
-        public string FileType => "xml";
+        internal override string DateFormat => "yyyy-MM-ddThh:mm:ss";
 
-        public async Task<List<Transaction>> Read(string path)
+        internal override Dictionary<string, string> StatusMap => new Dictionary<string, string>
+            {{"Approved", "A"}, {"Rejected", "R"}, {"Done", "D"}};
+
+        public override string FileType => "xml";
+
+        public override async Task<List<TransactionRawData>> ReadTransactions(string path)
         {
             var xmlFileContent = await GetXmlFileContent(path);
             var xmlTransactions = DeserializeXmlContent(xmlFileContent);
@@ -34,13 +37,13 @@ namespace ApplicationService.TransactionReaders
             return (XmlTransactions) serializer.Deserialize(reader);
         }
 
-        private List<Transaction> CopyToTransactionList(XmlTransactions xmlTransactions)
+        private List<TransactionRawData> CopyToTransactionList(XmlTransactions xmlTransactions)
         {
-            var transactions = xmlTransactions.XmlTransactionModel.Select(x => new Transaction
+            var transactions = xmlTransactions.XmlTransactionModel.Select(x => new TransactionRawData
             {
                 TransactionId = x.TransactionId,
-                TransactionDate = x.TransactionDate,
-                Amount = x.PaymentDetails.Amount,
+                OriginalDateTime = x.OriginalDateTime,
+                OriginalAmount = x.PaymentDetails.OriginalAmount,
                 CurrencyCode = x.PaymentDetails.CurrencyCode,
                 Status = x.Status
             }).ToList();
@@ -60,7 +63,7 @@ namespace ApplicationService.TransactionReaders
     {
         [XmlAttribute("id")] public string TransactionId { get; set; }
 
-        [XmlElement("TransactionDate")] public DateTime TransactionDate { get; set; }
+        [XmlElement("TransactionDate")] public string OriginalDateTime { get; set; }
 
         [XmlElement("PaymentDetails")] public PaymentDetails PaymentDetails { get; set; }
 
@@ -69,7 +72,7 @@ namespace ApplicationService.TransactionReaders
 
     public class PaymentDetails
     {
-        [XmlElement("Amount")] public decimal Amount { get; set; }
+        [XmlElement("Amount")] public string OriginalAmount { get; set; }
 
         [XmlElement("CurrencyCode")] public string CurrencyCode { get; set; }
     }
