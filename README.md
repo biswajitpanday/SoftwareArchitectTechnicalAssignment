@@ -21,6 +21,11 @@
 * Façade
 * Command Pattern
 
+## How To Run Application
+1. Clone this repository.
+2. Run ApplicationDatabaseGenerateScript.sql script to prepare database.
+3. Press F5 in Visual Studio.
+
 ## Run Unit Tests
 1. Go to `Test > Windows > Test Explorer` from Visual Studio main menu.
 2. Click on `run all Test`
