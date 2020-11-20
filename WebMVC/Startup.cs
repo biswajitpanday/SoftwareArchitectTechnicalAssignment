@@ -56,13 +56,14 @@ namespace WebMVC
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
-
+            app.UseCors();
             app.UseRouting();
 
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapControllers();
                 endpoints.MapControllerRoute(
                     "default",
                     "{controller=FileUpload}/{action=Index}/{id?}");

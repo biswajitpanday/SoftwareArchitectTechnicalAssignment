@@ -19,13 +19,14 @@ namespace WebMVC.Controllers.Api
             _transactionImportService = transactionImportService;
         }
 
-        public async Task Upload(IFormFile file)
+        [HttpPost("UploadFile")]
+        public async Task UploadFile(IFormFile file)
         {
             try
             {
                 var uploadFolderPath = EnsureUploadFolder();
-                WriteToDisk(uploadFolderPath, file);
-                await _transactionImportService.Import(uploadFolderPath);
+                var filePath = WriteToDisk(uploadFolderPath, file);
+                await _transactionImportService.Import(filePath);
             }
             catch (Exception e)
             {
@@ -45,7 +46,7 @@ namespace WebMVC.Controllers.Api
             return uploadPath;
         }
 
-        private void WriteToDisk(string uploadFolderPath, IFormFile file)
+        private string WriteToDisk(string uploadFolderPath, IFormFile file)
         {
             var fileName = ContentDispositionHeaderValue.Parse(file.ContentDisposition).FileName.Value;
             var filePath = Path.Combine(uploadFolderPath, fileName);
@@ -53,6 +54,8 @@ namespace WebMVC.Controllers.Api
             {
                 file.CopyTo(stream);
             }
+
+            return filePath;
         }
 
         #endregion
