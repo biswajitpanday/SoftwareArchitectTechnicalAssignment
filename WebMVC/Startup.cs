@@ -65,7 +65,7 @@ namespace WebMVC
             {
                 endpoints.MapControllerRoute(
                     "default",
-                    "{controller=Home}/{action=Index}/{id?}");
+                    "{controller=FileUpload}/{action=Index}/{id?}");
             });
         }
     }
