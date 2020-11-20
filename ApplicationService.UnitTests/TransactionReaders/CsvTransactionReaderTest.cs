@@ -1,6 +1,8 @@
 ﻿using System.Threading.Tasks;
 using ApplicationCore.Interfaces.Services;
 using ApplicationService.TransactionReaders;
+using Microsoft.Extensions.Logging;
+using Moq;
 using Xunit;
 
 namespace ApplicationService.UnitTests.TransactionReaders
@@ -10,7 +12,8 @@ namespace ApplicationService.UnitTests.TransactionReaders
         private readonly ITransactionFileReader _transactionFileReader;
         public CsvTransactionReaderTest()
         {
-            _transactionFileReader = new CsvTransactionReader();
+            var logger = new Mock<ILogger<CsvTransactionReader>>();
+            _transactionFileReader = new CsvTransactionReader(logger.Object);
         }
 
         [Fact]

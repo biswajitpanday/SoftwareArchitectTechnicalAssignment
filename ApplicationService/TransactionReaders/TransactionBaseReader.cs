@@ -5,12 +5,19 @@ using System.Linq;
 using System.Threading.Tasks;
 using ApplicationCore.Interfaces.Services;
 using ApplicationCore.Models;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 
 namespace ApplicationService.TransactionReaders
 {
     public abstract class TransactionBaseReader : ITransactionFileReader
     {
-        internal abstract string DateFormat { get; }
+        private readonly ILogger _logger;
+
+        public TransactionBaseReader(ILogger logger)
+        {
+            _logger = logger;
+        }
 
         internal abstract Dictionary<string, string> StatusMap { get; }
         public abstract string FileType { get; }
@@ -20,12 +27,16 @@ namespace ApplicationService.TransactionReaders
             var transactions = await ReadTransactions(path);
             var invalidTransactions = GetInvalidTransactions(transactions);
             if (invalidTransactions.Any())
+            {
+                _logger.LogInformation(0, "Invalid Transaction");
+                _logger.LogInformation(0, JsonConvert.SerializeObject(invalidTransactions));
                 throw new Exception("Invalid file");
+            }
 
             return transactions.Select(x => new Transaction
             {
                 TransactionId = x.TransactionId,
-                TransactionDate = System.Convert.ToDateTime(x.OriginalDateTime),
+                TransactionDate = x.TransactionDate,
                 Amount = System.Convert.ToDecimal(x.OriginalAmount),
                 CurrencyCode = x.CurrencyCode,
                 Status = x.Status,
@@ -42,8 +53,8 @@ namespace ApplicationService.TransactionReaders
             var invalidTransactions = new List<TransactionRawData>();
             foreach (var transaction in transactions)
                 if (!IsValidTransactionId(transaction) || !IsValidAmount(transaction) ||
-                    !IsValidCurrencyCode(transaction) || !IsValidTransactionDate(transaction) ||
-                    !IsValidStatus(transaction) || !CheckMandatoryFields(transaction))
+                    !IsValidCurrencyCode(transaction) || !IsValidStatus(transaction) || 
+                    !CheckMandatoryFields(transaction))
                     invalidTransactions.Add(transaction);
             return invalidTransactions;
         }
@@ -52,7 +63,7 @@ namespace ApplicationService.TransactionReaders
         private bool CheckMandatoryFields(TransactionRawData transaction)
         {
             if (string.IsNullOrEmpty(transaction.TransactionId) || transaction.Amount <= -1 ||
-                string.IsNullOrEmpty(transaction.CurrencyCode) || string.IsNullOrEmpty(transaction.OriginalDateTime))
+                string.IsNullOrEmpty(transaction.CurrencyCode) || transaction.TransactionDate== DateTime.MinValue)
                 return false;
             return true;
         }
@@ -80,13 +91,6 @@ namespace ApplicationService.TransactionReaders
             return isValid;
         }
 
-        private bool IsValidTransactionDate(TransactionRawData transaction)
-        {
-            var isValid = DateTime.TryParseExact(transaction.OriginalDateTime, new[] {DateFormat},
-                CultureInfo.InvariantCulture, DateTimeStyles.None, out _);
-            return isValid;
-        }
-
         private bool IsValidStatus(TransactionRawData transaction)
         {
             var outputStatus = GetOutputStatus(transaction.Status);
@@ -107,7 +111,6 @@ namespace ApplicationService.TransactionReaders
 
     public class TransactionRawData : Transaction
     {
-        public string OriginalDateTime { get; set; }
         public string OriginalAmount { get; set; }
     }
 }

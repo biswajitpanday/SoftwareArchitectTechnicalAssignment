@@ -3,16 +3,17 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using ApplicationCore.Models;
 using CsvHelper;
 using CsvHelper.Configuration;
-using CsvHelper.TypeConversion;
+using Microsoft.Extensions.Logging;
 
 namespace ApplicationService.TransactionReaders
 {
     public class CsvTransactionReader : TransactionBaseReader
     {
-        internal override string DateFormat => "dd/MM/yyyy hh:mm:ss";
+        public CsvTransactionReader(ILogger<CsvTransactionReader> logger) : base(logger)
+        {
+        }
 
         internal override Dictionary<string, string> StatusMap => new Dictionary<string, string>
             {{"Approved", "A"}, {"Failed", "R"}, {"Finished", "D"}};
@@ -42,7 +43,7 @@ namespace ApplicationService.TransactionReaders
                 Map(m => m.TransactionId).Index(0);
                 Map(m => m.CurrencyCode).Index(2);
                 Map(m => m.Status).Index(4);
-                Map(m => m.OriginalDateTime).Index(3);
+                Map(m => m.TransactionDate).Index(3).TypeConverterOption.Format("dd/MM/yyyy hh:mm:ss");
                 Map(m => m.OriginalAmount).Index(1);
             }
         }

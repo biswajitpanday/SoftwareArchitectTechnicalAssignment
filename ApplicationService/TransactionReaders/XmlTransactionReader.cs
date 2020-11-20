@@ -4,12 +4,15 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
+using Microsoft.Extensions.Logging;
 
 namespace ApplicationService.TransactionReaders
 {
     public class XmlTransactionReader : TransactionBaseReader
     {
-        internal override string DateFormat => "yyyy-MM-ddThh:mm:ss";
+        public XmlTransactionReader(ILogger<XmlTransactionReader> logger) : base(logger)
+        {
+        }
 
         internal override Dictionary<string, string> StatusMap => new Dictionary<string, string>
             {{"Approved", "A"}, {"Rejected", "R"}, {"Done", "D"}};
@@ -42,7 +45,7 @@ namespace ApplicationService.TransactionReaders
             var transactions = xmlTransactions.XmlTransactionModel.Select(x => new TransactionRawData
             {
                 TransactionId = x.TransactionId,
-                OriginalDateTime = x.OriginalDateTime,
+                TransactionDate = x.TransactionDate,
                 OriginalAmount = x.PaymentDetails.OriginalAmount,
                 CurrencyCode = x.PaymentDetails.CurrencyCode,
                 Status = x.Status
@@ -63,7 +66,7 @@ namespace ApplicationService.TransactionReaders
     {
         [XmlAttribute("id")] public string TransactionId { get; set; }
 
-        [XmlElement("TransactionDate")] public string OriginalDateTime { get; set; }
+        [XmlElement("TransactionDate")] public DateTime TransactionDate { get; set; }
 
         [XmlElement("PaymentDetails")] public PaymentDetails PaymentDetails { get; set; }
 
