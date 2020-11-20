@@ -1,5 +1,4 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -14,7 +13,8 @@ namespace ApplicationService.Services
         private readonly IEnumerable<ITransactionFileReader> _transactionFileReaders;
         private readonly ITransactionRepository _transactionRepository;
 
-        public TransactionImportService(IEnumerable<ITransactionFileReader> transactionFileReaders, ITransactionRepository transactionRepository)
+        public TransactionImportService(IEnumerable<ITransactionFileReader> transactionFileReaders,
+            ITransactionRepository transactionRepository)
         {
             _transactionFileReaders = transactionFileReaders;
             _transactionRepository = transactionRepository;

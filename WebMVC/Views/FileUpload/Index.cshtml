@@ -1,4 +1,7 @@
-﻿<div class="row mt-5">
+﻿<div class="alert alert-success" role="alert" id="success"></div>
+<div class="alert alert-danger" role="alert" id="error"></div>
+
+<div class="row mt-5">
     <div class="col-6 m-0 m-auto">
         <h5>Upload CSV Or Xml File</h5>
         <form method="post" enctype="multipart/form-data" asp-controller="Home" asp-action="Upload">
@@ -15,5 +18,8 @@
         </form>
     </div>
 </div>
+@section Scripts
+{
+    <script src="~/js/fileUpload.js"></script>
+}
 
-<script src="~/js/fileUpload.js"></script>
