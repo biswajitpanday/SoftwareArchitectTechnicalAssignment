@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using ApplicationCore.Interfaces.Repositories;
 using ApplicationCore.Interfaces.Services;
 
 namespace ApplicationService.Services
@@ -11,10 +12,12 @@ namespace ApplicationService.Services
     public class TransactionImportService : ITransactionImportService
     {
         private readonly IEnumerable<ITransactionFileReader> _transactionFileReaders;
+        private readonly ITransactionRepository _transactionRepository;
 
-        public TransactionImportService(IEnumerable<ITransactionFileReader> transactionFileReaders)
+        public TransactionImportService(IEnumerable<ITransactionFileReader> transactionFileReaders, ITransactionRepository transactionRepository)
         {
             _transactionFileReaders = transactionFileReaders;
+            _transactionRepository = transactionRepository;
         }
 
         public async Task Import(string filePath)
@@ -24,6 +27,7 @@ namespace ApplicationService.Services
             if (transactionFileReader == null)
                 throw new Exception("Unknown format");
             var transactions = await transactionFileReader.Read(filePath);
+            await _transactionRepository.ImportTransaction(transactions);
         }
 
 

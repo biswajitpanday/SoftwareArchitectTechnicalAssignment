@@ -7,7 +7,7 @@ namespace ApplicationCore.Interfaces.Repositories
 {
     public interface ITransactionRepository
     {
-        Task SaveTransaction();
+        Task ImportTransaction(List<Transaction> transactions);
         Task<List<Transaction>> GetAllTransactions(SearchFilter filter);
     }
 }
