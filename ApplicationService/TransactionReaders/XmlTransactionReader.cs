@@ -19,7 +19,7 @@ namespace ApplicationService.TransactionReaders
 
         public override string FileType => "xml";
 
-        public override async Task<List<TransactionRawData>> ReadTransactions(string path)
+        internal override async Task<List<TransactionRawData>> ReadTransactions(string path)
         {
             var xmlFileContent = await GetXmlFileContent(path);
             var xmlTransactions = DeserializeXmlContent(xmlFileContent);

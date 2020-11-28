@@ -20,7 +20,7 @@ namespace ApplicationService.TransactionReaders
 
         public override string FileType => "csv";
 
-        public override Task<List<TransactionRawData>> ReadTransactions(string path)
+        internal override Task<List<TransactionRawData>> ReadTransactions(string path)
         {
             return Task.Run(() =>
             {

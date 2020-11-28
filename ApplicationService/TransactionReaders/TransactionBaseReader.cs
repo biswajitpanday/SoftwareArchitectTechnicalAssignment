@@ -21,6 +21,7 @@ namespace ApplicationService.TransactionReaders
 
         internal abstract Dictionary<string, string> StatusMap { get; }
         public abstract string FileType { get; }
+        internal abstract Task<List<TransactionRawData>> ReadTransactions(string path);
 
         public async Task<List<Transaction>> Read(string path)
         {
@@ -37,14 +38,14 @@ namespace ApplicationService.TransactionReaders
             {
                 TransactionId = x.TransactionId,
                 TransactionDate = x.TransactionDate,
-                Amount = System.Convert.ToDecimal(x.OriginalAmount),
+                Amount = Convert.ToDecimal(x.OriginalAmount),
                 CurrencyCode = x.CurrencyCode,
                 Status = x.Status,
                 OutputStatus = GetOutputStatus(x.Status)
             }).ToList();
         }
 
-        public abstract Task<List<TransactionRawData>> ReadTransactions(string path);
+        
 
         #region Supported Methods
 
