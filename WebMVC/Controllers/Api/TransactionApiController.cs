@@ -31,6 +31,7 @@ namespace WebMVC.Controllers.Api
             }
         }
 
+        //https://localhost:44341/api/TransactionApi/GetAllByDateRange/2019-02-01T01:05:55/2019-02-24T22:20:30
         [HttpGet("GetAllByDateRange/{startDate}/{endDate}")]
         public async Task<IActionResult> GetAllByDateRange(DateTime startDate, DateTime endDate)
         {
